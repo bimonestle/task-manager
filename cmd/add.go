@@ -8,7 +8,7 @@ import (
 
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Add task to your task list.",
+	Short: "Adds task to your task list.",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("add called")
 	},
