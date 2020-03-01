@@ -46,6 +46,28 @@ func CreateTask(task string) (int, error) {
 	return id, nil
 }
 
+// Read all tasks created in db
+func AllTasks() ([]Task, error) {
+	var tasks []Task
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+
+		// Iterating on the Task keys inside db
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			tasks = append(tasks, Task{
+				Key:   btoi(k),
+				Value: string(v),
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
 // Convert Integer to Byte slice
 func itob(v int) []byte {
 	b := make([]byte, 8)
