@@ -33,8 +33,10 @@ func Init(dbPath string) error {
 // Create task and update it to db
 func CreateTask(task string) (int, error) {
 	var id int
+
+	// Write / Update db to create task
 	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(taskBucket)
+		b := tx.Bucket(taskBucket) // Get the Bucket
 		id64, _ := b.NextSequence()
 		id = int(id64)
 		key := itob(id)
@@ -49,8 +51,10 @@ func CreateTask(task string) (int, error) {
 // Read all tasks created in db
 func AllTasks() ([]Task, error) {
 	var tasks []Task
+
+	// View the datas inside db
 	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(taskBucket)
+		b := tx.Bucket(taskBucket) // Get the Bucket
 
 		// Iterating on the Task keys inside db
 		c := b.Cursor()
@@ -66,6 +70,16 @@ func AllTasks() ([]Task, error) {
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// Delete task in db
+func DeleteTask(key int) error {
+	// Write / Update the db to delete task
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket) // Get the Bucket
+		return b.Delete(itob(key))
+	})
+	return err
 }
 
 // Convert Integer to Byte slice
