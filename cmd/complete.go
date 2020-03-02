@@ -15,7 +15,7 @@ var completeCmd = &cobra.Command{
 	Short: "Lists all the completed tasks",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("complete called")
-		tasks, err := db.AllTasks()
+		tasks, err := db.AllCompleted()
 		if err != nil {
 			fmt.Println("Someting went wrong: ", err)
 			os.Exit(1)
