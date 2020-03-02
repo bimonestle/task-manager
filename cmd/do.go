@@ -15,6 +15,8 @@ var doCmd = &cobra.Command{
 	Short: "Marks a task as complete",
 	Run: func(cmd *cobra.Command, args []string) {
 		var ids []int
+
+		// Iterate the arguments
 		for _, arg := range args {
 			id, err := strconv.Atoi(arg)
 			if err != nil {
@@ -23,11 +25,15 @@ var doCmd = &cobra.Command{
 				ids = append(ids, id)
 			}
 		}
+
+		// Get all the tasks
 		tasks, err := db.AllTasks()
 		if err != nil {
 			fmt.Println("Something went wrong: ", err)
 			return
 		}
+
+		// Iterate over the ids
 		for _, id := range ids {
 			if id <= 0 || id > len(tasks) {
 				fmt.Println("Invalid task number: ", id)

@@ -8,6 +8,7 @@ import (
 )
 
 var taskBucket = []byte("tasks")
+var completeBucket = []byte("completedTasks")
 var db *bolt.DB
 
 // Data structurw of Task{Key int, Value string}
@@ -24,7 +25,9 @@ func Init(dbPath string) error {
 		return err
 	}
 	fn := func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists(taskBucket)
+		// _, err := tx.CreateBucketIfNotExists(taskBucket)
+		tx.CreateBucketIfNotExists(taskBucket)
+		tx.CreateBucketIfNotExists(completeBucket)
 		return err
 	}
 	return db.Update(fn)
@@ -70,6 +73,30 @@ func AllTasks() ([]Task, error) {
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// Read all completed tasks created in db
+func AllCompleted() ([]Task, error) {
+	var compTasks []Task
+
+	// View the completed tasks
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(completeBucket) // Get the Complete Bucket
+
+		// Iterating the Task keys
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			compTasks = append(compTasks, Task{
+				Key:   btoi(k),
+				Value: string(v),
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return compTasks, nil
 }
 
 // Delete task in db
